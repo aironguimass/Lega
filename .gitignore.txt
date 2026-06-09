@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+.vs/
+
+Flutter/build/
+Flutter/.dart_tool/
+Flutter/.idea/
