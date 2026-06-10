@@ -60,7 +60,7 @@ namespace LegaAPI.Controllers
                     t.Status,
                     t.DataCriacao,
                     t.DataInicio,
-                    t.DataFim
+                    t.DataFim,
                                         TotalEquipas = _context.TorneioEquipas.Count(te => te.TorneioId == t.TorneioId)
 
                 })
