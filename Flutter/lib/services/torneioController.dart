@@ -7,13 +7,12 @@ class TorneioService {
 
   Future<List<Torneio>> fetchTorneios() async {
     try {
-      // Configura um tempo limite de 10 segundos para a resposta
       final response = await http
           .get(Uri.parse(_baseUrl))
           .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        print("JSON RECEBIDO: ${response.body}"); // Adiciona isto!
+        print("JSON RECEBIDO: ${response.body}");
         List<dynamic> body = jsonDecode(response.body);
         return body.map((dynamic item) => Torneio.fromJson(item)).toList();
       } else {
@@ -21,7 +20,6 @@ class TorneioService {
             'Erro ao carregar dados do servidor (Status: ${response.statusCode})');
       }
     } catch (e) {
-      // Captura timeouts, falta de internet e erros de ligação
       throw Exception(
           'Não foi possível conectar ao servidor. Verifique se tens ligação a internet.');
     }

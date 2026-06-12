@@ -6,10 +6,21 @@ import 'package:pbl2/theme/colors.dart';
 import 'package:pbl2/models/model_torneio.dart';
 import 'package:pbl2/widgets/card_torneio.dart';
 import 'package:pbl2/widgets/efeito_borda.dart';
+import 'package:pbl2/telas/tela_login.dart';
+import 'package:pbl2/services/verification_authenticator.dart';
+import 'package:pbl2/services/authenticator_service.dart';
+import 'package:pbl2/telas/tela_perfil.dart';
 
-class TelaHome extends StatelessWidget {
-  TelaHome({super.key});
+class TelaHome extends StatefulWidget {
+  const TelaHome({super.key});
+
+  State<TelaHome> createState() => _TelaHomeState();
+}
+
+class _TelaHomeState extends State<TelaHome> {
   final TorneioService torneioController = TorneioService();
+  String filtroOrdenacao = 'Mais recentes';
+  String textoPesquisa = '';
 
   @override
   Widget build(BuildContext context) {
@@ -26,21 +37,31 @@ class TelaHome extends StatelessWidget {
 
               Row(
                 // Linha para o ícone do perfil
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      print('Ícone do perfil clicado.');
-                    },
-                    customBorder: const CircleBorder(),
-                    child: const Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 60,
-                        color: Colors.white,
-                      ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.account_circle,
+                      size: 60,
+                      color: Colors.white,
                     ),
+                    onPressed: () async {
+                      final logado = await AuthenticatorService.estaLogado();
+
+                      if (!logado) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const TelaPerfil()),
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
@@ -71,6 +92,11 @@ class TelaHome extends StatelessWidget {
 //===============================================================================
 
               TextField(
+                onChanged: (valor) {
+                  setState(() {
+                    textoPesquisa = valor;
+                  });
+                },
                 // Barra de pesquisa para os torneios
                 style: const TextStyle(
                   color: Color.fromARGB(
@@ -136,8 +162,9 @@ class TelaHome extends StatelessWidget {
                     }).toList();
                   },
                   onSelected: (String escolha) {
-                    print(
-                        'Opção selecionada: $escolha'); // Ação ao selecionar uma opção de filtro (pode ser modificada)
+                    setState(() {
+                      filtroOrdenacao = escolha;
+                    }); // Ação ao selecionar uma opção de filtro (pode ser modificada)
                   },
                 ),
               ),
@@ -146,7 +173,7 @@ class TelaHome extends StatelessWidget {
               const SizedBox(height: 5),
 //===============================================================================
 
-              // const Divider( //linha divisoria
+              // const Divider( //linha divisoria entre o botao ordenar por e os cards torneios
               //     color: Color.fromARGB(60, 255, 255, 255), thickness: 2.0),
 //===============================================================================
               Expanded(
@@ -235,14 +262,43 @@ class TelaHome extends StatelessWidget {
                     }
                     //===============================================================================
 
-                    // 4. Sucesso
                     final listaTorneios = snapshot.data!;
 
+//===============================================================================
+//logica do filtro, e pesquisa
+
+// FILTRAR PELO TEXTO DIGITADO
+                    List<Torneio> listaFiltrada = listaTorneios.where((t) {
+                      return t.nome
+                          .toLowerCase()
+                          .contains(textoPesquisa.toLowerCase());
+                    }).toList();
+
+                    switch (filtroOrdenacao) {
+                      case 'A-Z':
+                        listaFiltrada.sort((a, b) => a.nome.compareTo(b.nome));
+                        break;
+
+                      case 'Z-A':
+                        listaFiltrada.sort((a, b) => b.nome.compareTo(a.nome));
+                        break;
+
+                      case 'Mais recentes':
+                        listaFiltrada.sort(
+                            (a, b) => b.dataCriacao.compareTo(a.dataCriacao));
+                        break;
+
+                      case 'Por Status':
+                        listaFiltrada
+                            .sort((a, b) => a.status.compareTo(b.status));
+                        break;
+                    }
+
                     return ListView.builder(
-                      itemCount: listaTorneios.length,
+                      itemCount: listaFiltrada.length,
                       padding: EdgeInsets.zero,
                       itemBuilder: (context, index) {
-                        final itemTorneio = listaTorneios[index];
+                        final itemTorneio = listaFiltrada[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10.0),
                           child: CardTorneio(
@@ -263,7 +319,7 @@ class TelaHome extends StatelessWidget {
               const SizedBox(height: 10),
 //===============================================================================
 
-              // const Divider( //linha divisoria
+              // const Divider( //linha divisoria na tela entre o  meus torneios e os cards torneios
               //     color: Color.fromARGB(60, 255, 255, 255), thickness: 2.0),
 //===============================================================================
 
@@ -276,8 +332,8 @@ class TelaHome extends StatelessWidget {
                   width: 220,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
-                      print('Botao meus torneios clicado');
+                    onPressed: () async {
+                      await verificarAcessoMeusTorneios(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.fundoCardTransparente,

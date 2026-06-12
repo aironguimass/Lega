@@ -5,6 +5,7 @@ class AppColors {
 
   // Cor dos cartões dos torneios
   static const Color cardTorneio = Color(0xFF1E264D);
+  static const Color colorBotao = Color.fromARGB(255, 0, 45, 170);
 
   // Cor do status do torneio
   static const Color statusActive = Color(0xFF00E676);
