@@ -11,6 +11,7 @@ class FundoPadrao extends StatelessWidget {
     final larguraTela = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.colorBackground,
       body: Stack(
         children: [
