@@ -28,8 +28,17 @@ class Torneio {
     this.icone,
   });
 
-  Color get corStatus =>
-      (status == 'Ativo') ? AppColors.statusActive : AppColors.statusFinished;
+  Color get corStatus {
+    switch (status) {
+      case 'Ativo':
+        return AppColors.statusActive;
+      case 'Finalizado':
+        return AppColors.statusFinished;
+      case 'EmConstrucao':
+      default:
+        return AppColors.statusConstruction;
+    }
+  }
 
   factory Torneio.fromJson(Map<String, dynamic> json) {
     return Torneio(

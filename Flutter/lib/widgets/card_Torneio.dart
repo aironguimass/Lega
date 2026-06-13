@@ -86,8 +86,7 @@ class CardTorneio extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color:
-                        torneio.status == 'Ativo' ? Colors.green : Colors.red,
+                    color: torneio.corStatus,
                     shape: BoxShape.circle,
                   ),
                 ),

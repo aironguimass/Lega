@@ -77,7 +77,9 @@ namespace LegaAPI.Controllers
         public async Task<ActionResult<Torneio>> PostTorneio([FromBody] Torneio torneio)
         {
             torneio.DataCriacao = DateTime.Now;
-            torneio.Status = "Ativo";
+            if (string.IsNullOrEmpty(torneio.Status))
+                torneio.Status = "EmConstrucao";
+
             torneio.Excluido = false;
 
 

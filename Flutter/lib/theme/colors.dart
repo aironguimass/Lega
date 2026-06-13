@@ -10,6 +10,7 @@ class AppColors {
   // Cor do status do torneio
   static const Color statusActive = Color(0xFF00E676);
   static const Color statusFinished = Color(0xFFFF1744);
+  static const Color statusConstruction = Color(0xFF9E9E9E); // cinza
 
   // Cores de Texto
   static const Color textPrimary = Colors.white;
